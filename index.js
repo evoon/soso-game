@@ -169,10 +169,10 @@ const foreground = new Sprite({
 })
 
 const keys = {
-  w: {
+  z: {
     pressed: false
   },
-  a: {
+  q: {
     pressed: false
   },
   s: {
@@ -215,7 +215,7 @@ function animate() {
   if (battle.initiated) return
 
   // activate a battle
-  if (keys.w.pressed || keys.a.pressed || keys.s.pressed || keys.d.pressed) {
+  if (keys.z.pressed || keys.q.pressed || keys.s.pressed || keys.d.pressed) {
     for (let i = 0; i < battleZones.length; i++) {
       const battleZone = battleZones[i]
       const overlappingArea =
@@ -271,7 +271,7 @@ function animate() {
     }
   }
 
-  if (keys.w.pressed && lastKey === 'w') {
+  if (keys.z.pressed && lastKey === 'z') {
     player.animate = true
     player.image = player.sprites.up
 
@@ -304,7 +304,7 @@ function animate() {
       movables.forEach((movable) => {
         movable.position.y += 3
       })
-  } else if (keys.a.pressed && lastKey === 'a') {
+  } else if (keys.q.pressed && lastKey === 'q') {
     player.animate = true
     player.image = player.sprites.left
 
@@ -441,13 +441,13 @@ window.addEventListener('keydown', (e) => {
       document.querySelector('#characterDialogueBox').style.display = 'flex'
       player.isInteracting = true
       break
-    case 'w':
-      keys.w.pressed = true
-      lastKey = 'w'
+    case 'z':
+      keys.z.pressed = true
+      lastKey = 'z'
       break
-    case 'a':
-      keys.a.pressed = true
-      lastKey = 'a'
+    case 'q':
+      keys.q.pressed = true
+      lastKey = 'q'
       break
 
     case 's':
@@ -464,11 +464,11 @@ window.addEventListener('keydown', (e) => {
 
 window.addEventListener('keyup', (e) => {
   switch (e.key) {
-    case 'w':
-      keys.w.pressed = false
+    case 'z':
+      keys.z.pressed = false
       break
-    case 'a':
-      keys.a.pressed = false
+    case 'q':
+      keys.q.pressed = false
       break
     case 's':
       keys.s.pressed = false
