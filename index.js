@@ -106,7 +106,7 @@ charactersMap.forEach((row, i) => {
 })
 
 const image = new Image()
-image.src = './img/Pellet Town.png'
+image.src = './img/map.png'
 
 const foregroundImage = new Image()
 foregroundImage.src = './img/foregroundObjects.png'
