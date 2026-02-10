@@ -175,7 +175,6 @@ const keys = {
 const movables = [
   background,
   ...boundaries,
-  foreground,
   ...battleZones,
   ...characters
 ]
@@ -184,8 +183,7 @@ const renderables = [
   ...boundaries,
   ...battleZones,
   ...characters,
-  player,
-  foreground
+  player
 ]
 
 const battle = {
@@ -394,7 +392,7 @@ function animate() {
       })
   }
 }
-animate()
+//animate()
 
 let lastKey = ''
 window.addEventListener('keydown', (e) => {
