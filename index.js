@@ -25,8 +25,8 @@ const zoomLevel = 1.4
 const scaleFactor = (canvas.width / 1024) * zoomLevel
 const moveSpeed = 1.5 * scaleFactor
 const offset = {
-  x: -2033 * scaleFactor,
-  y: -204 * scaleFactor
+  x: -2500 * scaleFactor,
+  y: -400 * scaleFactor
 }
 
 collisionsMap.forEach((row, i) => {
@@ -109,6 +109,30 @@ charactersMap.forEach((row, i) => {
     }
   })
 })
+
+// Bruno - placed manually
+const brunoImg = new Image()
+brunoImg.src = './img/oldMan/Idle.png'
+const bruno = new Character({
+  position: {
+    x: -1050,
+    y: -526
+  },
+  image: brunoImg,
+  frames: {
+    max: 4,
+    hold: 60
+  },
+  scale: 3 * scaleFactor,
+  animate: true,
+  name: 'Bruno',
+  dialogue: [
+    { speaker: 'Bruno', text: 'Salut Solène, mais qu\'est-ce que tu fais là ?', audio: './audio/question1.mp3' },
+    { speaker: 'Solène', text: 'Je cherche Evan, est-ce que tu l\'as vu ?', audio: './audio/question_court.mp3', auto: true },
+    { speaker: 'Bruno', text: 'Mhhh.. peut-être aux rochers à l\'entrée ?' }
+  ]
+})
+characters.push(bruno)
 
 const image = new Image()
 image.src = './img/map.png'
@@ -233,6 +257,19 @@ function animate(timestamp) {
 
   if (battle.initiated) return
 
+  // Check for nearby characters to interact with
+  player.interactionAsset = null
+  for (let i = 0; i < characters.length; i++) {
+    const character = characters[i]
+    const dx = (player.position.x + player.width / 2) - (character.position.x + character.width / 2)
+    const dy = (player.position.y + player.height / 2) - (character.position.y + character.height / 2)
+    const dist = Math.sqrt(dx * dx + dy * dy)
+    if (dist < 80 * scaleFactor) {
+      player.interactionAsset = character
+      break
+    }
+  }
+
   if (keys.z.pressed && lastKey === 'z') {
     player.animate = true
     player.image = player.sprites.up
@@ -262,24 +299,82 @@ function animate(timestamp) {
 //animate()
 
 let lastKey = ''
+let currentDialogueAudio = null
+
+function showDialogueLine(line) {
+  const dialogueBox = document.querySelector('#characterDialogueBox')
+  const nameTag = document.querySelector('#characterDialogueName')
+  const textEl = document.querySelector('#characterDialogueText')
+
+  // Handle structured dialogue (with speaker/text/audio)
+  if (typeof line === 'object') {
+    nameTag.textContent = line.speaker
+    nameTag.style.display = 'block'
+    textEl.textContent = line.text
+
+    // Stop previous audio
+    if (currentDialogueAudio) {
+      currentDialogueAudio.stop()
+      currentDialogueAudio = null
+    }
+
+    // Play audio if specified
+    if (line.audio) {
+      currentDialogueAudio = new Howl({
+        src: [line.audio],
+        volume: 1
+      })
+      currentDialogueAudio.play()
+    }
+  } else {
+    // Legacy string dialogue
+    nameTag.style.display = 'none'
+    textEl.textContent = line
+  }
+
+  dialogueBox.style.display = 'block'
+}
+
+function advanceDialogue() {
+  const asset = player.interactionAsset
+  asset.dialogueIndex++
+
+  const { dialogueIndex, dialogue } = asset
+  if (dialogueIndex <= dialogue.length - 1) {
+    const line = dialogue[dialogueIndex]
+    showDialogueLine(line)
+
+    // Auto-advance if the line has auto: true (player's own line)
+    if (typeof line === 'object' && line.auto) {
+      const autoDelay = line.audio ? 2500 : 1500
+      setTimeout(() => {
+        if (player.isInteracting && asset.dialogueIndex === dialogueIndex) {
+          advanceDialogue()
+        }
+      }, autoDelay)
+    }
+    return
+  }
+
+  // Finish conversation
+  if (currentDialogueAudio) {
+    currentDialogueAudio.stop()
+    currentDialogueAudio = null
+  }
+  player.isInteracting = false
+  asset.dialogueIndex = 0
+  document.querySelector('#characterDialogueBox').style.display = 'none'
+}
+
 window.addEventListener('keydown', (e) => {
   if (player.isInteracting) {
     switch (e.key) {
       case ' ':
-        player.interactionAsset.dialogueIndex++
+        // Don't advance if current line is auto-advancing
+        const currentLine = player.interactionAsset.dialogue[player.interactionAsset.dialogueIndex]
+        if (typeof currentLine === 'object' && currentLine.auto) return
 
-        const { dialogueIndex, dialogue } = player.interactionAsset
-        if (dialogueIndex <= dialogue.length - 1) {
-          document.querySelector('#characterDialogueBox').innerHTML =
-            player.interactionAsset.dialogue[dialogueIndex]
-          return
-        }
-
-        // finish conversation
-        player.isInteracting = false
-        player.interactionAsset.dialogueIndex = 0
-        document.querySelector('#characterDialogueBox').style.display = 'none'
-
+        advanceDialogue()
         break
     }
     return
@@ -290,10 +385,19 @@ window.addEventListener('keydown', (e) => {
       if (!player.interactionAsset) return
 
       // beginning the conversation
-      const firstMessage = player.interactionAsset.dialogue[0]
-      document.querySelector('#characterDialogueBox').innerHTML = firstMessage
-      document.querySelector('#characterDialogueBox').style.display = 'flex'
+      const firstLine = player.interactionAsset.dialogue[0]
+      showDialogueLine(firstLine)
       player.isInteracting = true
+
+      // Auto-advance if first line is auto
+      if (typeof firstLine === 'object' && firstLine.auto) {
+        const autoDelay = firstLine.audio ? 2500 : 1500
+        setTimeout(() => {
+          if (player.isInteracting && player.interactionAsset.dialogueIndex === 0) {
+            advanceDialogue()
+          }
+        }, autoDelay)
+      }
       break
     case 'z':
       keys.z.pressed = true
