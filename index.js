@@ -136,6 +136,40 @@ const bruno = new Character({
 })
 characters.push(bruno)
 
+// Evan NPC - hidden initially
+const evanDownImg = new Image()
+evanDownImg.src = './img/evan/playerDown.png'
+const evanUpImg = new Image()
+evanUpImg.src = './img/evan/playerUp.png'
+const evanLeftImg = new Image()
+evanLeftImg.src = './img/evan/playerLeft.png'
+const evanRightImg = new Image()
+evanRightImg.src = './img/evan/playerRight.png'
+
+const evan = new Character({
+  position: {
+    x: 41.8 * 48 * scaleFactor + offset.x,
+    y: 6.18 * 48 * scaleFactor + offset.y
+  },
+  image: evanDownImg,
+  frames: {
+    max: 4,
+    hold: 20
+  },
+  sprites: {
+    up: evanUpImg,
+    left: evanLeftImg,
+    right: evanRightImg,
+    down: evanDownImg
+  },
+  scale: playerScale,
+  animate: false,
+  name: 'Evan',
+  dialogue: []
+})
+evan.opacity = 0
+characters.push(evan)
+
 const image = new Image()
 image.src = './img/map.png'
 
@@ -315,6 +349,17 @@ function showDialogueLine(line) {
     nameTag.style.display = 'block'
     textEl.textContent = line.text
 
+    // Pink style for Solène, default brown for others
+    if (line.speaker.toLowerCase() === 'solène') {
+      dialogueBox.style.borderColor = '#E91E7B'
+      dialogueBox.style.boxShadow = '0 0 0 3px #F06BA8, 4px 6px 12px rgba(0,0,0,0.4)'
+      nameTag.style.backgroundColor = '#E91E7B'
+    } else {
+      dialogueBox.style.borderColor = '#8B6914'
+      dialogueBox.style.boxShadow = '0 0 0 3px #C4A44A, 4px 6px 12px rgba(0,0,0,0.4)'
+      nameTag.style.backgroundColor = '#8B6914'
+    }
+
     // Stop previous audio
     if (currentDialogueAudio) {
       currentDialogueAudio.stop()
@@ -371,6 +416,15 @@ function advanceDialogue() {
   player.isInteracting = false
   asset.dialogueIndex = 0
   document.querySelector('#characterDialogueBox').style.display = 'none'
+
+  // Make Evan appear after talking to Bruno
+  if (asset === bruno && evan.opacity === 0) {
+    gsap.to(evan, {
+      opacity: 1,
+      duration: 1.5,
+      ease: 'power2.inOut'
+    })
+  }
 }
 
 window.addEventListener('keydown', (e) => {
