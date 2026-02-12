@@ -127,7 +127,7 @@ const bruno = new Character({
   animate: false,
   name: 'Bruno',
   defaultFrame: 0,
-  talkFrame: 2,
+  talkFrame: 3,
   dialogue: [
     { speaker: 'Bruno', text: 'Salut Solène, mais qu\'est-ce que tu fais là ?', audio: './audio/question1.mp3' },
     { speaker: 'Solène', text: 'Je cherche Evan, est-ce que tu l\'as vu ?', audio: './audio/question_court.mp3', auto: true },
@@ -165,7 +165,19 @@ const evan = new Character({
   scale: (canvas.width / 1024),
   animate: false,
   name: 'Evan',
-  dialogue: []
+  dialogue: [
+    { speaker: 'Evan', text: 'Ah Solène, tu es enfin là !' },
+    { speaker: 'Evan', text: 'Assieds-toi sur le rocher', onComplete: 'evanSitScene' },
+    { speaker: 'Evan', text: 'Tu te souviens de ce moment à Roz Armor, le soir, sur ces rochers ?' },
+    { speaker: 'Solène', text: 'Oui, c\'était trop bien !', auto: true },
+    { speaker: 'Evan', text: 'Il y avait une étoile filante qui était passée et tu m\'avais demandé de faire un voeu' },
+    { speaker: 'Solène', text: 'Oh oui ! Et tu ne m\'avais jamais dit ce que c\'était ?', auto: true },
+    { speaker: 'Evan', text: 'Oui, et je vais maintenant te le dire' },
+    { speaker: 'Evan', text: 'Je ne te l\'ai pas dit car ça faisait encore peu de temps qu\'on était ensemble et je ne voulais pas te perturber' },
+    { speaker: 'Evan', text: 'Mon voeu ce soir là, lorsque cette étoile filante est passée' },
+    { speaker: 'Evan', text: 'Etait...' },
+    { speaker: 'Evan', text: 'De passer le restant de mes jours avec toi' }
+  ]
 })
 evan.opacity = 0
 characters.push(evan)
@@ -293,6 +305,7 @@ function animate(timestamp) {
   player.animate = false
 
   if (battle.initiated) return
+  if (playerLocked) return
 
   // Check for nearby characters to interact with
   player.interactionAsset = null
@@ -336,6 +349,7 @@ function animate(timestamp) {
 //animate()
 
 let lastKey = ''
+let playerLocked = false
 let currentDialogueAudio = null
 
 function showDialogueLine(line) {
@@ -383,8 +397,45 @@ function showDialogueLine(line) {
   dialogueBox.style.display = 'block'
 }
 
+function executeDialogueCallback(callbackName) {
+  if (callbackName === 'evanSitScene') {
+    // Evan faces up
+    evan.image = evanUpImg
+    evan.frames.val = 0
+    evan.animate = false
+
+    // Move Solène to the target position
+    // Target map offset: (-4455.9, -329.4)
+    // Current map offset: background.position
+    const targetOffsetX = -4455.9
+    const targetOffsetY = -329.4
+    const deltaX = targetOffsetX - background.position.x
+    const deltaY = targetOffsetY - background.position.y
+
+    movables.forEach((movable) => {
+      movable.position.x += deltaX
+      movable.position.y += deltaY
+    })
+
+    // Force Solène to face up
+    player.image = player.sprites.up
+    player.frames.val = 0
+    player.animate = false
+
+    // Lock player movement permanently
+    playerLocked = true
+  }
+}
+
 function advanceDialogue() {
   const asset = player.interactionAsset
+
+  // Check if the current line has an onComplete callback before advancing
+  const prevLine = asset.dialogue[asset.dialogueIndex]
+  if (typeof prevLine === 'object' && prevLine.onComplete) {
+    executeDialogueCallback(prevLine.onComplete)
+  }
+
   asset.dialogueIndex++
 
   const { dialogueIndex, dialogue } = asset
