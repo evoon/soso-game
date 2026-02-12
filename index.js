@@ -62,53 +62,6 @@ battleZonesMap.forEach((row, i) => {
 })
 
 const characters = []
-const villagerImg = new Image()
-villagerImg.src = './img/villager/Idle.png'
-
-const oldManImg = new Image()
-oldManImg.src = './img/oldMan/Idle.png'
-
-charactersMap.forEach((row, i) => {
-  row.forEach((symbol, j) => {
-    // 1026 === villager
-    if (symbol === 1026) {
-      characters.push(
-        new Character({
-          position: {
-            x: j * 48 * scaleFactor + offset.x,
-            y: i * 48 * scaleFactor + offset.y
-          },
-          image: villagerImg,
-          frames: {
-            max: 4,
-            hold: 60
-          },
-          scale: 3 * scaleFactor,
-          animate: true,
-          dialogue: ['...', 'Hey mister, have you seen my Doggochu?']
-        })
-      )
-    }
-    // 1031 === oldMan
-    else if (symbol === 1031) {
-      characters.push(
-        new Character({
-          position: {
-            x: j * 48 * scaleFactor + offset.x,
-            y: i * 48 * scaleFactor + offset.y
-          },
-          image: oldManImg,
-          frames: {
-            max: 4,
-            hold: 60
-          },
-          scale: 3 * scaleFactor,
-          dialogue: ['My bones hurt.']
-        })
-      )
-    }
-  })
-})
 
 // Bruno - placed manually
 const brunoImg = new Image()
@@ -169,14 +122,20 @@ const evan = new Character({
     { speaker: 'Evan', text: 'Ah Solène, tu es enfin là !', audio: './audio/explication_court.mp3' },
     { speaker: 'Evan', text: 'Assieds-toi sur le rocher', audio: './audio/explication_court.mp3', onComplete: 'evanSitScene' },
     { speaker: 'Evan', text: 'Tu te souviens de ce moment à Roz Armor, le soir, sur ces rochers ?', audio: './audio/explication1.mp3' },
-    { speaker: 'Solène', text: 'Oui, c\'était trop bien !', audio: './audio/explication2.mp3', auto: true },
+    { speaker: 'Solène', text: 'Oui, c\'était trop bien !', audio: './audio/explication2.mp3' },
     { speaker: 'Evan', text: 'Il y avait une étoile filante qui était passée et tu m\'avais demandé de faire un voeu', audio: './audio/explication3.mp3' },
-    { speaker: 'Solène', text: 'Oh oui ! Et tu ne m\'avais jamais dit ce que c\'était ?', audio: './audio/explication1.mp3', auto: true },
+    { speaker: 'Solène', text: 'Oh oui ! Et tu ne m\'avais jamais dit ce que c\'était ?', audio: './audio/explication1.mp3' },
     { speaker: 'Evan', text: 'Oui, et je vais maintenant te le dire', audio: './audio/explication_court.mp3' },
     { speaker: 'Evan', text: 'Je ne te l\'ai pas dit car ça faisait encore peu de temps qu\'on était ensemble et je ne voulais pas te perturber', audio: './audio/explication1.mp3' },
     { speaker: 'Evan', text: 'Mon voeu ce soir là, lorsque cette étoile filante est passée', audio: './audio/explication2.mp3' },
     { speaker: 'Evan', text: 'Etait...', audio: './audio/explication_court.mp3' },
-    { speaker: 'Evan', text: 'De passer le restant de mes jours avec toi', audio: './audio/explication3.mp3' }
+    { speaker: 'Evan', text: 'De passer le restant de mes jours avec toi', audio: './audio/explication3.mp3' },
+    { speaker: 'Evan', text: 'Je ne suis pas très bon pour exprimer mes sentiments pour toi mais voici un petit poème qui j\'espère te plaira :', audio: './audio/explication1.mp3' },
+    { speaker: 'Evan', text: 'Si Solène a un million de fans, alors je suis l\'un d\'entre eux.', audio: './audio/explication2.mp3' },
+    { speaker: 'Evan', text: 'Si Solène a 10 fans, alors je suis l\'un d\'entre eux.', audio: './audio/explication_court.mp3' },
+    { speaker: 'Evan', text: 'Si Solène n\'a qu\'un seul fan, alors c\'est moi.', audio: './audio/explication_court.mp3' },
+    { speaker: 'Evan', text: 'Si Solène n\'a plus de fans, alors cela signifie que je ne suis plus sur cette Terre.', audio: './audio/explication3.mp3' },
+    { speaker: 'Evan', text: 'Si le monde est contre Solène, alors je suis contre le monde.', audio: './audio/explication1.mp3', onComplete: 'endingScene' }
   ]
 })
 evan.opacity = 0
@@ -397,7 +356,7 @@ function showDialogueLine(line) {
   dialogueBox.style.display = 'block'
 }
 
-function executeDialogueCallback(callbackName) {
+function executeDialogueCallback(callbackName, onDone) {
   if (callbackName === 'evanSitScene') {
     // Evan faces up
     evan.image = evanUpImg
@@ -424,7 +383,53 @@ function executeDialogueCallback(callbackName) {
 
     // Lock player movement permanently
     playerLocked = true
+
+    // Hide dialogue box and pause for 2.5 seconds
+    document.querySelector('#characterDialogueBox').style.display = 'none'
+    setTimeout(() => {
+      if (onDone) onDone()
+    }, 2500)
+    return
   }
+  if (callbackName === 'endingScene') {
+    // Hide dialogue box
+    document.querySelector('#characterDialogueBox').style.display = 'none'
+
+    // Stop music
+    audio.Map.stop()
+
+    // Circle close animation
+    const gameReveal = document.querySelector('#gameRevealOverlay')
+    gameReveal.style.display = 'block'
+    gameReveal.style.background = 'black'
+    gameReveal.style.clipPath = 'circle(0% at 50% 50%)'
+    gsap.fromTo(gameReveal,
+      { clipPath: 'circle(100% at 50% 50%)' },
+      {
+        clipPath: 'circle(0% at 50% 50%)',
+        duration: 2,
+        ease: 'power2.inOut',
+        onComplete() {
+          // Full black screen for 2.5 seconds
+          gameReveal.style.clipPath = 'circle(100% at 50% 50%)'
+          setTimeout(() => {
+            // Show "Je t'aime <3"
+            const loveMsg = document.createElement('div')
+            loveMsg.textContent = 'Je t\'aime \u2764'
+            loveMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: "Press Start 2P", cursive; font-size: 42px; z-index: 200; opacity: 0; text-align: center;'
+            document.body.appendChild(loveMsg)
+            gsap.to(loveMsg, {
+              opacity: 1,
+              duration: 1.5,
+              ease: 'power2.inOut'
+            })
+          }, 2500)
+        }
+      }
+    )
+    return
+  }
+  if (onDone) onDone()
 }
 
 function advanceDialogue() {
@@ -433,9 +438,16 @@ function advanceDialogue() {
   // Check if the current line has an onComplete callback before advancing
   const prevLine = asset.dialogue[asset.dialogueIndex]
   if (typeof prevLine === 'object' && prevLine.onComplete) {
-    executeDialogueCallback(prevLine.onComplete)
+    executeDialogueCallback(prevLine.onComplete, () => {
+      continueAdvance(asset)
+    })
+    return
   }
 
+  continueAdvance(asset)
+}
+
+function continueAdvance(asset) {
   asset.dialogueIndex++
 
   const { dialogueIndex, dialogue } = asset
