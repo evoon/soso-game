@@ -131,7 +131,7 @@ const bruno = new Character({
   dialogue: [
     { speaker: 'Bruno', text: 'Salut Solène, mais qu\'est-ce que tu fais là ?', audio: './audio/question1.mp3' },
     { speaker: 'Solène', text: 'Je cherche Evan, est-ce que tu l\'as vu ?', audio: './audio/question_court.mp3', auto: true },
-    { speaker: 'Bruno', text: 'Mhhh.. peut-être aux rochers à l\'entrée ?' }
+    { speaker: 'Bruno', text: 'Mhhh.. peut-être aux rochers à l\'entrée ?', audio: './audio/explication2.mp3' }
   ]
 })
 characters.push(bruno)
@@ -166,17 +166,17 @@ const evan = new Character({
   animate: false,
   name: 'Evan',
   dialogue: [
-    { speaker: 'Evan', text: 'Ah Solène, tu es enfin là !' },
-    { speaker: 'Evan', text: 'Assieds-toi sur le rocher', onComplete: 'evanSitScene' },
-    { speaker: 'Evan', text: 'Tu te souviens de ce moment à Roz Armor, le soir, sur ces rochers ?' },
-    { speaker: 'Solène', text: 'Oui, c\'était trop bien !', auto: true },
-    { speaker: 'Evan', text: 'Il y avait une étoile filante qui était passée et tu m\'avais demandé de faire un voeu' },
-    { speaker: 'Solène', text: 'Oh oui ! Et tu ne m\'avais jamais dit ce que c\'était ?', auto: true },
-    { speaker: 'Evan', text: 'Oui, et je vais maintenant te le dire' },
-    { speaker: 'Evan', text: 'Je ne te l\'ai pas dit car ça faisait encore peu de temps qu\'on était ensemble et je ne voulais pas te perturber' },
-    { speaker: 'Evan', text: 'Mon voeu ce soir là, lorsque cette étoile filante est passée' },
-    { speaker: 'Evan', text: 'Etait...' },
-    { speaker: 'Evan', text: 'De passer le restant de mes jours avec toi' }
+    { speaker: 'Evan', text: 'Ah Solène, tu es enfin là !', audio: './audio/explication_court.mp3' },
+    { speaker: 'Evan', text: 'Assieds-toi sur le rocher', audio: './audio/explication_court.mp3', onComplete: 'evanSitScene' },
+    { speaker: 'Evan', text: 'Tu te souviens de ce moment à Roz Armor, le soir, sur ces rochers ?', audio: './audio/explication1.mp3' },
+    { speaker: 'Solène', text: 'Oui, c\'était trop bien !', audio: './audio/explication2.mp3', auto: true },
+    { speaker: 'Evan', text: 'Il y avait une étoile filante qui était passée et tu m\'avais demandé de faire un voeu', audio: './audio/explication3.mp3' },
+    { speaker: 'Solène', text: 'Oh oui ! Et tu ne m\'avais jamais dit ce que c\'était ?', audio: './audio/explication1.mp3', auto: true },
+    { speaker: 'Evan', text: 'Oui, et je vais maintenant te le dire', audio: './audio/explication_court.mp3' },
+    { speaker: 'Evan', text: 'Je ne te l\'ai pas dit car ça faisait encore peu de temps qu\'on était ensemble et je ne voulais pas te perturber', audio: './audio/explication1.mp3' },
+    { speaker: 'Evan', text: 'Mon voeu ce soir là, lorsque cette étoile filante est passée', audio: './audio/explication2.mp3' },
+    { speaker: 'Evan', text: 'Etait...', audio: './audio/explication_court.mp3' },
+    { speaker: 'Evan', text: 'De passer le restant de mes jours avec toi', audio: './audio/explication3.mp3' }
   ]
 })
 evan.opacity = 0
