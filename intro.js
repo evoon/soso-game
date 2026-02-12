@@ -88,26 +88,55 @@ function playIntro() {
               const choicesBox = document.querySelector('#introChoices')
               choicesBox.style.display = 'flex'
 
-              const buttons = choicesBox.querySelectorAll('.intro-choice-btn')
-              buttons.forEach((btn) => {
-                btn.addEventListener('click', () => {
-                  choicesBox.style.display = 'none'
+              const btnOui = document.querySelector('#btnOui')
+              const btnNon = document.querySelector('#btnNon')
 
-                  // Fade out the intro screen
-                  gsap.to(introScreen, {
-                    opacity: 0,
-                    duration: 1,
-                    onComplete() {
-                      introScreen.style.display = 'none'
-                      introVideo.pause()
-                      introVideo.remove()
+              btnOui.addEventListener('click', () => {
+                choicesBox.style.display = 'none'
 
-                      // Start the game
-                      audio.Map.play()
-                      animate()
-                    }
-                  })
+                // Fade out the intro screen
+                gsap.to(introScreen, {
+                  opacity: 0,
+                  duration: 1,
+                  onComplete() {
+                    introScreen.style.display = 'none'
+                    introVideo.pause()
+                    introVideo.remove()
+
+                    // Start the game
+                    audio.Map.play()
+                    animate()
+                  }
                 })
+              })
+
+              btnNon.addEventListener('click', () => {
+                choicesBox.style.display = 'none'
+                introDialogueBox.style.display = 'none'
+
+                // Stop all current audio
+                bonjourAudio.stop()
+                explication1Audio.stop()
+                question2Audio.stop()
+
+                // Switch to black background with Karine gif
+                introContent.style.clipPath = 'circle(75% at 50% 50%)'
+                introContent.style.backgroundColor = 'black'
+                introVideo.style.display = 'none'
+
+                // Create looping gif
+                const karineGif = document.createElement('img')
+                karineGif.src = './video/karine/giphy.gif'
+                karineGif.style.cssText = 'width: 40%; height: auto; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); object-fit: contain; pointer-events: none;'
+                introContent.appendChild(karineGif)
+
+                // Play Karine audio in loop
+                const karineAudio = new Howl({
+                  src: ['./video/karine/karine.mp3'],
+                  volume: 1,
+                  loop: true
+                })
+                karineAudio.play()
               })
             })
           })
