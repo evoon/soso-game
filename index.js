@@ -205,6 +205,7 @@ let lastFrameTime = 0
 
 function animate(timestamp) {
   const animationId = window.requestAnimationFrame(animate)
+  console.log('Player screen:', player.position.x.toFixed(1), player.position.y.toFixed(1), '| Map offset:', background.position.x.toFixed(1), background.position.y.toFixed(1))
   renderables.forEach((renderable) => {
     renderable.draw()
   })

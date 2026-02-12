@@ -185,8 +185,10 @@ function playIntro() {
 
                       const messages = [
                         { text: 'Et c\'est tout !!', duration: 2000 },
+                        { text: 'Quoi que...', duration: 2000 },
+                        { text: 'Tu as été très gentille avec moi dernièrement...', duration: 2000 },
                         { text: 'Tu croyais que je t\'avais juste fait ça ?', duration: 2000 },
-                        { text: 'Tu me prends pour qui !!', duration: 2000 },
+                        { text: 'Ce serait mal me connaître', duration: 2000 },
                         { text: 'Tu ne sors pas avec n\'importe qui !!', duration: 2000 }
                       ]
 
