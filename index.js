@@ -115,8 +115,8 @@ const brunoImg = new Image()
 brunoImg.src = './img/oldMan/Idle.png'
 const bruno = new Character({
   position: {
-    x: 1325,
-    y: -1384
+    x: 50 * 48 * scaleFactor + offset.x,
+    y: 11 * 48 * scaleFactor + offset.y
   },
   image: brunoImg,
   frames: {
