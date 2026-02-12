@@ -22,6 +22,7 @@ console.log(charactersMap)
 
 const boundaries = []
 const scaleFactor = canvas.width / 1024
+const moveSpeed = 3 * scaleFactor
 const offset = {
   x: -55 * scaleFactor,
   y: -120 * scaleFactor
@@ -81,7 +82,7 @@ charactersMap.forEach((row, i) => {
             max: 4,
             hold: 60
           },
-          scale: 3,
+          scale: 3 * scaleFactor,
           animate: true,
           dialogue: ['...', 'Hey mister, have you seen my Doggochu?']
         })
@@ -100,7 +101,7 @@ charactersMap.forEach((row, i) => {
             max: 4,
             hold: 60
           },
-          scale: 3,
+          scale: 3 * scaleFactor,
           dialogue: ['My bones hurt.']
         })
       )
@@ -128,8 +129,8 @@ playerRightImage.src = './img/playerRight.png'
 
 const player = new Sprite({
   position: {
-    x: canvas.width / 2 - 192 / 4 / 2,
-    y: canvas.height / 2 - 68 / 2
+    x: canvas.width / 2 - (192 / 4 / 2) * scaleFactor,
+    y: canvas.height / 2 - (68 / 2) * scaleFactor
   },
   image: playerDownImage,
   frames: {
@@ -141,7 +142,8 @@ const player = new Sprite({
     left: playerLeftImage,
     right: playerRightImage,
     down: playerDownImage
-  }
+  },
+  scale: scaleFactor
 })
 
 const background = new Sprite({
@@ -272,7 +274,7 @@ function animate() {
     checkForCharacterCollision({
       characters,
       player,
-      characterOffset: { x: 0, y: 3 }
+      characterOffset: { x: 0, y: moveSpeed }
     })
 
     for (let i = 0; i < boundaries.length; i++) {
@@ -284,7 +286,7 @@ function animate() {
             ...boundary,
             position: {
               x: boundary.position.x,
-              y: boundary.position.y + 3
+              y: boundary.position.y + moveSpeed
             }
           }
         })
@@ -296,7 +298,7 @@ function animate() {
 
     if (moving)
       movables.forEach((movable) => {
-        movable.position.y += 3
+        movable.position.y += moveSpeed
       })
   } else if (keys.q.pressed && lastKey === 'q') {
     player.animate = true
@@ -305,7 +307,7 @@ function animate() {
     checkForCharacterCollision({
       characters,
       player,
-      characterOffset: { x: 3, y: 0 }
+      characterOffset: { x: moveSpeed, y: 0 }
     })
 
     for (let i = 0; i < boundaries.length; i++) {
@@ -316,7 +318,7 @@ function animate() {
           rectangle2: {
             ...boundary,
             position: {
-              x: boundary.position.x + 3,
+              x: boundary.position.x + moveSpeed,
               y: boundary.position.y
             }
           }
@@ -329,7 +331,7 @@ function animate() {
 
     if (moving)
       movables.forEach((movable) => {
-        movable.position.x += 3
+        movable.position.x += moveSpeed
       })
   } else if (keys.s.pressed && lastKey === 's') {
     player.animate = true
@@ -338,7 +340,7 @@ function animate() {
     checkForCharacterCollision({
       characters,
       player,
-      characterOffset: { x: 0, y: -3 }
+      characterOffset: { x: 0, y: -moveSpeed }
     })
 
     for (let i = 0; i < boundaries.length; i++) {
@@ -350,7 +352,7 @@ function animate() {
             ...boundary,
             position: {
               x: boundary.position.x,
-              y: boundary.position.y - 3
+              y: boundary.position.y - moveSpeed
             }
           }
         })
@@ -362,7 +364,7 @@ function animate() {
 
     if (moving)
       movables.forEach((movable) => {
-        movable.position.y -= 3
+        movable.position.y -= moveSpeed
       })
   } else if (keys.d.pressed && lastKey === 'd') {
     player.animate = true
@@ -371,7 +373,7 @@ function animate() {
     checkForCharacterCollision({
       characters,
       player,
-      characterOffset: { x: -3, y: 0 }
+      characterOffset: { x: -moveSpeed, y: 0 }
     })
 
     for (let i = 0; i < boundaries.length; i++) {
@@ -382,7 +384,7 @@ function animate() {
           rectangle2: {
             ...boundary,
             position: {
-              x: boundary.position.x - 3,
+              x: boundary.position.x - moveSpeed,
               y: boundary.position.y
             }
           }
@@ -395,7 +397,7 @@ function animate() {
 
     if (moving)
       movables.forEach((movable) => {
-        movable.position.x -= 3
+        movable.position.x -= moveSpeed
       })
   }
 }
