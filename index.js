@@ -23,6 +23,33 @@ console.log(charactersMap)
 const boundaries = []
 const zoomLevel = 1.4
 const scaleFactor = (canvas.width / 1024) * zoomLevel
+
+// Pixel-based collision from border.png
+const borderImg = new Image()
+borderImg.src = './img/border.png'
+let borderCanvas = null
+let borderCtx = null
+let borderData = null
+borderImg.onload = () => {
+  borderCanvas = document.createElement('canvas')
+  borderCanvas.width = borderImg.width
+  borderCanvas.height = borderImg.height
+  borderCtx = borderCanvas.getContext('2d')
+  borderCtx.drawImage(borderImg, 0, 0)
+  borderData = borderCtx.getImageData(0, 0, borderCanvas.width, borderCanvas.height)
+}
+
+function isBlocked(screenX, screenY) {
+  if (!borderData) return false
+  // Convert screen position to map pixel
+  const mapX = Math.floor((screenX - background.position.x) / scaleFactor)
+  const mapY = Math.floor((screenY - background.position.y) / scaleFactor)
+  if (mapX < 0 || mapY < 0 || mapX >= borderData.width || mapY >= borderData.height) return true
+  const index = (mapY * borderData.width + mapX) * 4
+  const a = borderData.data[index + 3]
+  // If pixel is not transparent, it's blocked
+  return a > 10
+}
 const moveSpeed = 0.75 * scaleFactor
 const offset = {
   x: -2260 * scaleFactor,
@@ -279,30 +306,42 @@ function animate(timestamp) {
     }
   }
 
+  // Player feet position (bottom center of sprite)
+  const playerFeetX = player.position.x + player.width / 2
+  const playerFeetY = player.position.y + player.height
+
   if (keys.z.pressed && lastKey === 'z') {
     player.animate = true
     player.image = player.sprites.up
-    movables.forEach((movable) => {
-      movable.position.y += moveSpeed
-    })
+    if (!isBlocked(playerFeetX, playerFeetY - moveSpeed)) {
+      movables.forEach((movable) => {
+        movable.position.y += moveSpeed
+      })
+    }
   } else if (keys.q.pressed && lastKey === 'q') {
     player.animate = true
     player.image = player.sprites.left
-    movables.forEach((movable) => {
-      movable.position.x += moveSpeed
-    })
+    if (!isBlocked(playerFeetX - moveSpeed, playerFeetY)) {
+      movables.forEach((movable) => {
+        movable.position.x += moveSpeed
+      })
+    }
   } else if (keys.s.pressed && lastKey === 's') {
     player.animate = true
     player.image = player.sprites.down
-    movables.forEach((movable) => {
-      movable.position.y -= moveSpeed
-    })
+    if (!isBlocked(playerFeetX, playerFeetY + moveSpeed)) {
+      movables.forEach((movable) => {
+        movable.position.y -= moveSpeed
+      })
+    }
   } else if (keys.d.pressed && lastKey === 'd') {
     player.animate = true
     player.image = player.sprites.right
-    movables.forEach((movable) => {
-      movable.position.x -= moveSpeed
-    })
+    if (!isBlocked(playerFeetX + moveSpeed, playerFeetY)) {
+      movables.forEach((movable) => {
+        movable.position.x -= moveSpeed
+      })
+    }
   }
 }
 //animate()
