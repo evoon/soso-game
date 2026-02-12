@@ -463,15 +463,6 @@ window.addEventListener('keyup', (e) => {
     case 'd':
       keys.d.pressed = false
       break
-  }
-})
-
-let clicked = false
-addEventListener('click', () => {
-  if (!clicked) {
-    audio.Map.play()
-    clicked = true
-  }
 })
 
 // Handle window resize
