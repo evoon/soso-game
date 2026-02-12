@@ -98,26 +98,111 @@ function playIntro() {
               btnOui.addEventListener('click', (e) => {
                 e.stopPropagation()
                 choicesBox.style.display = 'none'
+                introDialogueBox.style.display = 'none'
 
                 // Stop all audio
                 bonjourAudio.stop()
                 explication1Audio.stop()
                 question2Audio.stop()
 
-                // Fade out the intro screen
-                gsap.to(introScreen, {
-                  opacity: 0,
-                  duration: 1,
-                  onComplete() {
-                    introScreen.style.display = 'none'
-                    introVideo.pause()
-                    introVideo.remove()
-
-                    // Start the game
-                    audio.Map.play()
-                    animate()
-                  }
+                // Phase 1: Fireworks celebration (5 seconds)
+                const fireworksAudio = new Howl({
+                  src: ['./audio/fireworks.mp3'],
+                  volume: 1
                 })
+                fireworksAudio.play()
+
+                // Show celebration emojis flooding the screen
+                const celebrationEmojis = ['🎉', '🎊', '🥳', '🎆', '🎇', '✨', '💖', '❤️', '💕', '🏆', '🥂', '🍾', '💃', '🪩', '💗']
+                introContent.style.clipPath = 'circle(75% at 50% 50%)'
+                introContent.style.backgroundColor = 'black'
+                introVideo.style.display = 'none'
+
+                const emojiContainer = document.createElement('div')
+                emojiContainer.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 200;'
+                introContent.appendChild(emojiContainer)
+
+                // Spawn emojis continuously
+                const emojiInterval = setInterval(() => {
+                  for (let i = 0; i < 5; i++) {
+                    const emoji = document.createElement('div')
+                    emoji.textContent = celebrationEmojis[Math.floor(Math.random() * celebrationEmojis.length)]
+                    emoji.style.cssText = `
+                      position: absolute;
+                      font-size: ${24 + Math.random() * 40}px;
+                      left: ${Math.random() * 100}%;
+                      top: -50px;
+                      pointer-events: none;
+                      user-select: none;
+                    `
+                    emojiContainer.appendChild(emoji)
+
+                    gsap.to(emoji, {
+                      y: window.innerHeight + 100,
+                      x: (Math.random() - 0.5) * 200,
+                      rotation: Math.random() * 720 - 360,
+                      duration: 2 + Math.random() * 2,
+                      ease: 'power1.in',
+                      onComplete() {
+                        emoji.remove()
+                      }
+                    })
+                  }
+                }, 150)
+
+                // After 5 seconds: stop fireworks, go to black + silent for 3 seconds
+                setTimeout(() => {
+                  clearInterval(emojiInterval)
+                  fireworksAudio.stop()
+                  emojiContainer.remove()
+
+                  // Circle-close to black
+                  gsap.to(introScreen, {
+                    clipPath: 'circle(0% at 50% 50%)',
+                    duration: 0.8,
+                    ease: 'power2.inOut',
+                    onComplete() {
+                      introContent.style.display = 'none'
+                      introScreen.style.clipPath = 'none'
+                      introScreen.style.display = 'block'
+                      introScreen.style.opacity = 1
+                      introVideo.pause()
+                      introVideo.remove()
+
+                      // Phase 2: Silent black screen for 3 seconds
+                      setTimeout(() => {
+                        // Phase 3: Play car.mp3, black screen for 9 more seconds
+                        const carAudio = new Howl({
+                          src: ['./audio/car.mp3'],
+                          volume: 1
+                        })
+                        carAudio.play()
+
+                        setTimeout(() => {
+                          // Phase 4: Reveal the game with circle
+                          audio.Map.play()
+                          animate()
+
+                          introScreen.style.display = 'none'
+                          const gameReveal = document.querySelector('#gameRevealOverlay')
+                          gameReveal.style.display = 'block'
+                          gameReveal.style.clipPath = 'circle(100% at 50% 50%)'
+                          gsap.fromTo(gameReveal,
+                            { clipPath: 'circle(100% at 50% 50%)' },
+                            {
+                              clipPath: 'circle(0% at 50% 50%)',
+                              duration: 1.5,
+                              ease: 'power2.inOut',
+                              onComplete() {
+                                gameReveal.style.display = 'none'
+                              }
+                            }
+                          )
+                        }, 9000)
+                      }, 3000)
+                    }
+                  })
+                }, 5000)
               })
 
               btnNon.addEventListener('click', (e) => {

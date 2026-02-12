@@ -22,10 +22,10 @@ console.log(charactersMap)
 
 const boundaries = []
 const scaleFactor = canvas.width / 1024
-const moveSpeed = 3 * scaleFactor
+const moveSpeed = 1.5 * scaleFactor
 const offset = {
-  x: -55 * scaleFactor,
-  y: -120 * scaleFactor
+  x: -2500 * scaleFactor,
+  y: -1400 * scaleFactor
 }
 
 collisionsMap.forEach((row, i) => {
@@ -135,7 +135,7 @@ const player = new Sprite({
   image: playerDownImage,
   frames: {
     max: 4,
-    hold: 10
+    hold: 20
   },
   sprites: {
     up: playerUpImage,
@@ -199,11 +199,31 @@ const battle = {
   initiated: false
 }
 
-function animate() {
+const TARGET_FPS = 30
+const FRAME_INTERVAL = 1000 / TARGET_FPS
+let lastFrameTime = 0
+
+function animate(timestamp) {
   const animationId = window.requestAnimationFrame(animate)
   renderables.forEach((renderable) => {
     renderable.draw()
   })
+
+  // Vignette effect
+  const centerX = canvas.width / 2
+  const centerY = canvas.height / 2
+  const radius = Math.max(canvas.width, canvas.height) * 0.55
+  const vignette = c.createRadialGradient(centerX, centerY, radius * 0.3, centerX, centerY, radius)
+  vignette.addColorStop(0, 'rgba(0, 0, 0, 0)')
+  vignette.addColorStop(0.5, 'rgba(0, 0, 0, 0.2)')
+  vignette.addColorStop(1, 'rgba(0, 0, 0, 0.85)')
+  c.fillStyle = vignette
+  c.fillRect(0, 0, canvas.width, canvas.height)
+
+  // Limit movement updates to TARGET_FPS
+  const elapsed = timestamp - lastFrameTime
+  if (elapsed < FRAME_INTERVAL) return
+  lastFrameTime = timestamp - (elapsed % FRAME_INTERVAL)
 
   let moving = true
   player.animate = false
