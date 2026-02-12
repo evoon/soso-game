@@ -23,7 +23,7 @@ console.log(charactersMap)
 const boundaries = []
 const zoomLevel = 1.4
 const scaleFactor = (canvas.width / 1024) * zoomLevel
-const moveSpeed = 1.5 * scaleFactor
+const moveSpeed = 0.75 * scaleFactor
 const offset = {
   x: -2500 * scaleFactor,
   y: -400 * scaleFactor
@@ -115,7 +115,7 @@ const brunoImg = new Image()
 brunoImg.src = './img/oldMan/Idle.png'
 const bruno = new Character({
   position: {
-    x: -1050,
+    x: -1250,
     y: -526
   },
   image: brunoImg,
