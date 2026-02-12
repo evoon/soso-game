@@ -25,8 +25,8 @@ const zoomLevel = 1.4
 const scaleFactor = (canvas.width / 1024) * zoomLevel
 const moveSpeed = 0.75 * scaleFactor
 const offset = {
-  x: -2500 * scaleFactor,
-  y: -400 * scaleFactor
+  x: -2260 * scaleFactor,
+  y: -349 * scaleFactor
 }
 
 collisionsMap.forEach((row, i) => {
@@ -115,8 +115,8 @@ const brunoImg = new Image()
 brunoImg.src = './img/oldMan/Idle.png'
 const bruno = new Character({
   position: {
-    x: -1250,
-    y: -526
+    x: 1325,
+    y: -1384
   },
   image: brunoImg,
   frames: {
@@ -124,7 +124,7 @@ const bruno = new Character({
     hold: 60
   },
   scale: 3 * scaleFactor,
-  animate: true,
+  animate: false,
   name: 'Bruno',
   dialogue: [
     { speaker: 'Bruno', text: 'Salut Solène, mais qu\'est-ce que tu fais là ?', audio: './audio/question1.mp3' },
@@ -239,11 +239,12 @@ function animate(timestamp) {
   // Vignette effect
   const centerX = canvas.width / 2
   const centerY = canvas.height / 2
-  const radius = Math.max(canvas.width, canvas.height) * 0.55
-  const vignette = c.createRadialGradient(centerX, centerY, radius * 0.3, centerX, centerY, radius)
+  const radius = Math.max(canvas.width, canvas.height) * 0.5
+  const vignette = c.createRadialGradient(centerX, centerY, radius * 0.15, centerX, centerY, radius)
   vignette.addColorStop(0, 'rgba(0, 0, 0, 0)')
-  vignette.addColorStop(0.5, 'rgba(0, 0, 0, 0.2)')
-  vignette.addColorStop(1, 'rgba(0, 0, 0, 0.85)')
+  vignette.addColorStop(0.4, 'rgba(0, 0, 0, 0.3)')
+  vignette.addColorStop(0.7, 'rgba(0, 0, 0, 0.6)')
+  vignette.addColorStop(1, 'rgba(0, 0, 0, 0.95)')
   c.fillStyle = vignette
   c.fillRect(0, 0, canvas.width, canvas.height)
 
