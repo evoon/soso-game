@@ -162,7 +162,7 @@ const evan = new Character({
     right: evanRightImg,
     down: evanDownImg
   },
-  scale: playerScale,
+  scale: (canvas.width / 1024),
   animate: false,
   name: 'Evan',
   dialogue: []
