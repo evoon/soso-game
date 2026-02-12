@@ -22,7 +22,9 @@ function playIntro() {
       ease: 'power2.inOut',
       onComplete() {
         // Phase 3: Play audio and show dialogue
-        bonjourAudio.play()
+        setTimeout(() => {
+          bonjourAudio.play()
+        }, 1000)
         introDialogueBox.style.display = 'block'
 
         // Typewriter effect for "Bonjour solène !!"
