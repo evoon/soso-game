@@ -398,35 +398,52 @@ function executeDialogueCallback(callbackName, onDone) {
     // Stop music
     audio.Map.stop()
 
-    // Circle close animation
-    const gameReveal = document.querySelector('#gameRevealOverlay')
-    gameReveal.style.display = 'block'
-    gameReveal.style.background = 'black'
-    gameReveal.style.clipPath = 'circle(0% at 50% 50%)'
-    gsap.fromTo(gameReveal,
-      { clipPath: 'circle(100% at 50% 50%)' },
-      {
-        clipPath: 'circle(0% at 50% 50%)',
-        duration: 2,
-        ease: 'power2.inOut',
-        onComplete() {
-          // Full black screen for 2.5 seconds
-          gameReveal.style.clipPath = 'circle(100% at 50% 50%)'
-          setTimeout(() => {
-            // Show "Je t'aime <3"
-            const loveMsg = document.createElement('div')
-            loveMsg.textContent = 'Je t\'aime \u2764'
-            loveMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: "Press Start 2P", cursive; font-size: 42px; z-index: 200; opacity: 0; text-align: center;'
-            document.body.appendChild(loveMsg)
-            gsap.to(loveMsg, {
-              opacity: 1,
-              duration: 1.5,
-              ease: 'power2.inOut'
-            })
-          }, 2500)
-        }
+    // Create a black overlay that covers everything
+    const endingOverlay = document.createElement('div')
+    endingOverlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 150; pointer-events: none;'
+    document.body.appendChild(endingOverlay)
+
+    // Use SVG for inverted circle (black outside, transparent inside)
+    const size = Math.max(window.innerWidth, window.innerHeight) * 1.5
+    const cx = window.innerWidth / 2
+    const cy = window.innerHeight / 2
+
+    endingOverlay.innerHTML = `
+      <svg width="100%" height="100%" style="position:absolute;top:0;left:0;">
+        <defs>
+          <mask id="circleMask">
+            <rect width="100%" height="100%" fill="white"/>
+            <circle cx="${cx}" cy="${cy}" r="${size}" fill="black" id="endingCircle"/>
+          </mask>
+        </defs>
+        <rect width="100%" height="100%" fill="black" mask="url(#circleMask)"/>
+      </svg>
+    `
+
+    const circle = endingOverlay.querySelector('#endingCircle')
+    gsap.to(circle, {
+      attr: { r: 0 },
+      duration: 2,
+      ease: 'power2.inOut',
+      onComplete() {
+        // Full black screen
+        endingOverlay.innerHTML = ''
+        endingOverlay.style.background = 'black'
+
+        setTimeout(() => {
+          // Show "Je t'aime <3"
+          const loveMsg = document.createElement('div')
+          loveMsg.textContent = 'Je t\'aime \u2764'
+          loveMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: "Press Start 2P", cursive; font-size: 42px; z-index: 200; opacity: 0; text-align: center;'
+          document.body.appendChild(loveMsg)
+          gsap.to(loveMsg, {
+            opacity: 1,
+            duration: 1.5,
+            ease: 'power2.inOut'
+          })
+        }, 2500)
       }
-    )
+    })
     return
   }
   if (onDone) onDone()
