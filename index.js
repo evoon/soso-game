@@ -126,6 +126,8 @@ const bruno = new Character({
   scale: 3 * scaleFactor,
   animate: false,
   name: 'Bruno',
+  defaultFrame: 0,
+  talkFrame: 2,
   dialogue: [
     { speaker: 'Bruno', text: 'Salut Solène, mais qu\'est-ce que tu fais là ?', audio: './audio/question1.mp3' },
     { speaker: 'Solène', text: 'Je cherche Evan, est-ce que tu l\'as vu ?', audio: './audio/question_court.mp3', auto: true },
@@ -362,6 +364,10 @@ function advanceDialogue() {
     currentDialogueAudio.stop()
     currentDialogueAudio = null
   }
+  // Reset character face direction
+  if (asset.defaultFrame !== undefined) {
+    asset.frames.val = asset.defaultFrame
+  }
   player.isInteracting = false
   asset.dialogueIndex = 0
   document.querySelector('#characterDialogueBox').style.display = 'none'
@@ -384,6 +390,11 @@ window.addEventListener('keydown', (e) => {
   switch (e.key) {
     case ' ':
       if (!player.interactionAsset) return
+
+      // Face the player when talked to
+      if (player.interactionAsset.talkFrame !== undefined) {
+        player.interactionAsset.frames.val = player.interactionAsset.talkFrame
+      }
 
       // beginning the conversation
       const firstLine = player.interactionAsset.dialogue[0]

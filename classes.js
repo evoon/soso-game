@@ -253,7 +253,9 @@ class Character extends Sprite {
     rotation = 0,
     scale = 1,
     name = '',
-    dialogue = []
+    dialogue = [],
+    defaultFrame = 0,
+    talkFrame
   }) {
     super({
       position,
@@ -269,5 +271,7 @@ class Character extends Sprite {
     this.name = name
     this.dialogue = dialogue
     this.dialogueIndex = 0
+    this.defaultFrame = defaultFrame
+    this.talkFrame = talkFrame
   }
 }
