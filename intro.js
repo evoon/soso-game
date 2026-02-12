@@ -11,6 +11,48 @@ function playIntro() {
     volume: 1
   })
 
+  const explication1Audio = new Howl({
+    src: ['./audio/explication1.mp3'],
+    volume: 1
+  })
+
+  const question2Audio = new Howl({
+    src: ['./audio/question2_choix.mp3'],
+    volume: 1
+  })
+
+  function typeMessage(message, callback) {
+    let charIndex = 0
+    introDialogueArrow.style.display = 'none'
+
+    function typeChar() {
+      if (charIndex < message.length) {
+        introDialogueText.innerHTML =
+          message.substring(0, charIndex + 1) +
+          '<span id="introDialogueCursor">|</span>'
+        charIndex++
+        const delay = message[charIndex - 1] === ' ' ? 80 : 65
+        setTimeout(typeChar, delay)
+      } else {
+        introDialogueText.innerHTML = message
+        introDialogueArrow.style.display = 'block'
+        if (callback) {
+          setTimeout(() => {
+            function onInteract() {
+              window.removeEventListener('keydown', onInteract)
+              window.removeEventListener('click', onInteract)
+              callback()
+            }
+            window.addEventListener('keydown', onInteract)
+            window.addEventListener('click', onInteract)
+          }, 500)
+        }
+      }
+    }
+
+    setTimeout(typeChar, 300)
+  }
+
   // Phase 1: Black screen for 2.5 seconds
   setTimeout(() => {
     // Phase 2: Circle expands to reveal video
@@ -24,58 +66,52 @@ function playIntro() {
         // Phase 3: Play audio and show dialogue
         setTimeout(() => {
           bonjourAudio.play()
-        }, 1000)
+        }, 500)
         introDialogueBox.style.display = 'block'
 
-        // Typewriter effect for "Bonjour solène !!"
-        const message = 'Bonjour solène !!'
-        let charIndex = 0
+        // Message 1: Bonjour solène !!
+        typeMessage('Bonjour solène !!', function showMessage2() {
+          // Message 2: Switch video and audio
+          introVideo.src = './video/question.mp4'
+          introVideo.play()
+          explication1Audio.play()
 
-        function typeChar() {
-          if (charIndex < message.length) {
-            introDialogueText.innerHTML =
-              message.substring(0, charIndex + 1) +
-              '<span id="introDialogueCursor">|</span>'
-            charIndex++
-            // Vary speed slightly for natural feel
-            const delay = message[charIndex - 1] === ' ' ? 80 : 65
-            setTimeout(typeChar, delay)
-          } else {
-            // Typing done - remove cursor, show arrow
-            introDialogueText.innerHTML = message
-            introDialogueArrow.style.display = 'block'
+          typeMessage('Il faut que je te demande quelque chose de très important...', function showMessage3() {
+            // Message 3: The big question
+            introVideo.src = './video/question.mp4'
+            introVideo.play()
+            question2Audio.play()
 
-            // Wait for click/keypress to dismiss intro
-            function dismissIntro() {
-              window.removeEventListener('keydown', dismissIntro)
-              window.removeEventListener('click', dismissIntro)
+            typeMessage('Veux-tu être ma Valentine ??', function showChoices() {
+              // Hide the arrow, show choices instead
+              introDialogueArrow.style.display = 'none'
+              const choicesBox = document.querySelector('#introChoices')
+              choicesBox.style.display = 'flex'
 
-              // Fade out the intro screen
-              gsap.to(introScreen, {
-                opacity: 0,
-                duration: 1,
-                onComplete() {
-                  introScreen.style.display = 'none'
-                  introVideo.pause()
-                  introVideo.remove()
+              const buttons = choicesBox.querySelectorAll('.intro-choice-btn')
+              buttons.forEach((btn) => {
+                btn.addEventListener('click', () => {
+                  choicesBox.style.display = 'none'
 
-                  // Start the game
-                  audio.Map.play()
-                  animate()
-                }
+                  // Fade out the intro screen
+                  gsap.to(introScreen, {
+                    opacity: 0,
+                    duration: 1,
+                    onComplete() {
+                      introScreen.style.display = 'none'
+                      introVideo.pause()
+                      introVideo.remove()
+
+                      // Start the game
+                      audio.Map.play()
+                      animate()
+                    }
+                  })
+                })
               })
-            }
-
-            // Small delay before allowing dismissal
-            setTimeout(() => {
-              window.addEventListener('keydown', dismissIntro)
-              window.addEventListener('click', dismissIntro)
-            }, 500)
-          }
-        }
-
-        // Start typing after a small pause
-        setTimeout(typeChar, 300)
+            })
+          })
+        })
       }
     })
   }, 2500)

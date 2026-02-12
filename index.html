@@ -149,6 +149,59 @@
       animation: bounceArrow 0.8s ease-in-out infinite;
       display: none;
     }
+
+    #introChoices {
+      display: none;
+      position: absolute;
+      bottom: 160px;
+      left: 50%;
+      transform: translateX(-50%);
+      flex-direction: column;
+      gap: 0;
+      z-index: 101;
+    }
+
+    .intro-choice-btn {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 16px;
+      color: #4A3728;
+      background-color: rgba(255, 245, 230, 0.95);
+      border: 4px solid #8B6914;
+      padding: 16px 48px;
+      cursor: pointer;
+      position: relative;
+      box-shadow: 0 0 0 3px #C4A44A;
+      transition: background-color 0.15s;
+      min-width: 220px;
+      text-align: center;
+    }
+
+    .intro-choice-btn:first-child {
+      border-radius: 16px 16px 0 0;
+      border-bottom: 2px solid #C4A44A;
+    }
+
+    .intro-choice-btn:last-child {
+      border-radius: 0 0 16px 16px;
+      border-top: 2px solid #C4A44A;
+    }
+
+    .intro-choice-btn:hover {
+      background-color: #F5DEB3;
+    }
+
+    .intro-choice-btn .choice-arrow {
+      display: none;
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8B6914;
+    }
+
+    .intro-choice-btn:hover .choice-arrow {
+      display: inline;
+    }
   </style>
 </head>
 
@@ -161,6 +214,10 @@
     <div id="introDialogue">
       <div id="introDialogueText"></div>
       <div id="introDialogueArrow">&#9660;</div>
+    </div>
+    <div id="introChoices">
+      <button class="intro-choice-btn"><span class="choice-arrow">▶ </span>Oui</button>
+      <button class="intro-choice-btn"><span class="choice-arrow">▶ </span>Non</button>
     </div>
   </div>
 </div>
