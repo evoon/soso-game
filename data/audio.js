@@ -1,8 +1,9 @@
 const audio = {
   Map: new Howl({
-    src: './audio/map.wav',
+    src: './audio/music.mp3',
     html5: true,
-    volume: 0.1
+    volume: 0.1,
+    loop: true
   }),
   initBattle: new Howl({
     src: './audio/initBattle.wav',
