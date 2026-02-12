@@ -183,7 +183,8 @@ const renderables = [
   ...boundaries,
   ...battleZones,
   ...characters,
-  player
+  player,
+  foreground
 ]
 
 const battle = {
@@ -463,6 +464,7 @@ window.addEventListener('keyup', (e) => {
     case 'd':
       keys.d.pressed = false
       break
+  }
 })
 
 // Handle window resize

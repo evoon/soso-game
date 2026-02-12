@@ -89,7 +89,6 @@ function playIntro() {
             typeMessage('Veux-tu \u00eatre ma Valentine ??', function showChoices() {
               // Hide the arrow, show choices instead
               introDialogueArrow.style.display = 'none'
-              introDialogueBox.style.display = 'none'
               const choicesBox = document.querySelector('#introChoices')
               choicesBox.style.display = 'flex'
 
