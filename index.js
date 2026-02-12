@@ -21,9 +21,10 @@ for (let i = 0; i < charactersMapData.length; i += 70) {
 console.log(charactersMap)
 
 const boundaries = []
+const scaleFactor = canvas.width / 1024
 const offset = {
-  x: -55 * (canvas.width / 1024),
-  y: -120 * (canvas.height / 576)
+  x: -55 * scaleFactor,
+  y: -120 * scaleFactor
 }
 
 collisionsMap.forEach((row, i) => {
@@ -32,9 +33,10 @@ collisionsMap.forEach((row, i) => {
       boundaries.push(
         new Boundary({
           position: {
-            x: j * Boundary.width + offset.x,
-            y: i * Boundary.height + offset.y
-          }
+            x: j * 48 * scaleFactor + offset.x,
+            y: i * 48 * scaleFactor + offset.y
+          },
+          scale: scaleFactor
         })
       )
   })
@@ -48,9 +50,10 @@ battleZonesMap.forEach((row, i) => {
       battleZones.push(
         new Boundary({
           position: {
-            x: j * Boundary.width + offset.x,
-            y: i * Boundary.height + offset.y
-          }
+            x: j * 48 * scaleFactor + offset.x,
+            y: i * 48 * scaleFactor + offset.y
+          },
+          scale: scaleFactor
         })
       )
   })
@@ -70,8 +73,8 @@ charactersMap.forEach((row, i) => {
       characters.push(
         new Character({
           position: {
-            x: j * Boundary.width + offset.x,
-            y: i * Boundary.height + offset.y
+            x: j * 48 * scaleFactor + offset.x,
+            y: i * 48 * scaleFactor + offset.y
           },
           image: villagerImg,
           frames: {
@@ -89,8 +92,8 @@ charactersMap.forEach((row, i) => {
       characters.push(
         new Character({
           position: {
-            x: j * Boundary.width + offset.x,
-            y: i * Boundary.height + offset.y
+            x: j * 48 * scaleFactor + offset.x,
+            y: i * 48 * scaleFactor + offset.y
           },
           image: oldManImg,
           frames: {
@@ -146,7 +149,8 @@ const background = new Sprite({
     x: offset.x,
     y: offset.y
   },
-  image: image
+  image: image,
+  scale: scaleFactor
 })
 
 const foreground = new Sprite({
@@ -154,7 +158,8 @@ const foreground = new Sprite({
     x: offset.x,
     y: offset.y
   },
-  image: foregroundImage
+  image: foregroundImage,
+  scale: scaleFactor
 })
 
 const keys = {
@@ -174,6 +179,7 @@ const keys = {
 
 const movables = [
   background,
+  foreground,
   ...boundaries,
   ...battleZones,
   ...characters
