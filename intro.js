@@ -157,49 +157,111 @@ function playIntro() {
                   emojiContainer.remove()
 
                   // Circle-close to black
-                  gsap.to(introScreen, {
+                  gsap.to(introContent, {
                     clipPath: 'circle(0% at 50% 50%)',
                     duration: 0.8,
                     ease: 'power2.inOut',
                     onComplete() {
                       introContent.style.display = 'none'
-                      introScreen.style.clipPath = 'none'
-                      introScreen.style.display = 'block'
-                      introScreen.style.opacity = 1
                       introVideo.pause()
                       introVideo.remove()
 
-                      // Phase 2: Silent black screen for 3 seconds
-                      setTimeout(() => {
-                        // Phase 3: Play car.mp3, black screen for 9 more seconds
-                        const carAudio = new Howl({
-                          src: ['./audio/car.mp3'],
-                          volume: 1
-                        })
-                        carAudio.play()
+                      // Phase 2: Messages on black screen
+                      const blackMsg = document.createElement('div')
+                      blackMsg.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        font-family: 'Press Start 2P', cursive;
+                        font-size: 22px;
+                        color: white;
+                        text-align: center;
+                        line-height: 1.8;
+                        max-width: 80%;
+                        opacity: 0;
+                      `
+                      introScreen.appendChild(blackMsg)
 
-                        setTimeout(() => {
-                          // Phase 4: Reveal the game with circle
-                          audio.Map.play()
-                          animate()
+                      const messages = [
+                        { text: 'Et c\'est tout !!', duration: 2000 },
+                        { text: 'Tu croyais que je t\'avais juste fait ça ?', duration: 2000 },
+                        { text: 'Tu me prends pour qui !!', duration: 2000 },
+                        { text: 'Tu ne sors pas avec n\'importe qui !!', duration: 2000 }
+                      ]
 
-                          introScreen.style.display = 'none'
-                          const gameReveal = document.querySelector('#gameRevealOverlay')
-                          gameReveal.style.display = 'block'
-                          gameReveal.style.clipPath = 'circle(100% at 50% 50%)'
-                          gsap.fromTo(gameReveal,
-                            { clipPath: 'circle(100% at 50% 50%)' },
-                            {
-                              clipPath: 'circle(0% at 50% 50%)',
-                              duration: 1.5,
-                              ease: 'power2.inOut',
-                              onComplete() {
-                                gameReveal.style.display = 'none'
-                              }
+                      let msgIndex = 0
+                      function showNextMessage() {
+                        if (msgIndex >= messages.length) {
+                          // Fade out last message then continue to car phase
+                          gsap.to(blackMsg, {
+                            opacity: 0,
+                            duration: 0.4,
+                            onComplete() {
+                              blackMsg.remove()
+                              startCarPhase()
                             }
-                          )
-                        }, 9000)
-                      }, 3000)
+                          })
+                          return
+                        }
+
+                        blackMsg.textContent = messages[msgIndex].text
+                        gsap.fromTo(blackMsg,
+                          { opacity: 0 },
+                          {
+                            opacity: 1,
+                            duration: 0.4,
+                            onComplete() {
+                              setTimeout(() => {
+                                gsap.to(blackMsg, {
+                                  opacity: 0,
+                                  duration: 0.4,
+                                  onComplete() {
+                                    msgIndex++
+                                    setTimeout(() => showNextMessage(), 300)
+                                  }
+                                })
+                              }, messages[msgIndex].duration)
+                            }
+                          }
+                        )
+                      }
+
+                      showNextMessage()
+
+                      function startCarPhase() {
+                        // Phase 3: Silent pause for 3 seconds
+                        setTimeout(() => {
+                          // Phase 4: Play car.mp3, black screen for 9 more seconds
+                          const carAudio = new Howl({
+                            src: ['./audio/car.mp3'],
+                            volume: 1
+                          })
+                          carAudio.play()
+
+                          setTimeout(() => {
+                            // Phase 5: Reveal the game with circle
+                            audio.Map.play()
+                            animate()
+
+                            introScreen.style.display = 'none'
+                            const gameReveal = document.querySelector('#gameRevealOverlay')
+                            gameReveal.style.display = 'block'
+                            gameReveal.style.clipPath = 'circle(100% at 50% 50%)'
+                            gsap.fromTo(gameReveal,
+                              { clipPath: 'circle(100% at 50% 50%)' },
+                              {
+                                clipPath: 'circle(0% at 50% 50%)',
+                                duration: 1.5,
+                                ease: 'power2.inOut',
+                                onComplete() {
+                                  gameReveal.style.display = 'none'
+                                }
+                              }
+                            )
+                          }, 9000)
+                        }, 3000)
+                      }
                     }
                   })
                 }, 5000)
