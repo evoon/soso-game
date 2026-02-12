@@ -21,7 +21,7 @@ function playIntro() {
     volume: 1
   })
 
-  function typeMessage(message, callback) {
+  function typeMessage(message, callback, showChoicesDirectly) {
     let charIndex = 0
     introDialogueArrow.style.display = 'none'
 
@@ -35,17 +35,21 @@ function playIntro() {
         setTimeout(typeChar, delay)
       } else {
         introDialogueText.innerHTML = message
-        introDialogueArrow.style.display = 'block'
         if (callback) {
-          setTimeout(() => {
-            function onInteract() {
-              window.removeEventListener('keydown', onInteract)
-              window.removeEventListener('click', onInteract)
-              callback()
-            }
-            window.addEventListener('keydown', onInteract)
-            window.addEventListener('click', onInteract)
-          }, 500)
+          if (showChoicesDirectly) {
+            setTimeout(callback, 500)
+          } else {
+            introDialogueArrow.style.display = 'block'
+            setTimeout(() => {
+              function onInteract() {
+                window.removeEventListener('keydown', onInteract)
+                window.removeEventListener('click', onInteract)
+                callback()
+              }
+              window.addEventListener('keydown', onInteract)
+              window.addEventListener('click', onInteract)
+            }, 500)
+          }
         }
       }
     }
@@ -69,30 +73,37 @@ function playIntro() {
         }, 500)
         introDialogueBox.style.display = 'block'
 
-        // Message 1: Bonjour solène !!
-        typeMessage('Bonjour solène !!', function showMessage2() {
+        // Message 1
+        typeMessage('Bonjour sol\u00e8ne !!', function showMessage2() {
           // Message 2: Switch video and audio
           introVideo.src = './video/question.mp4'
           introVideo.play()
           explication1Audio.play()
 
-          typeMessage('Il faut que je te demande quelque chose de très important...', function showMessage3() {
+          typeMessage('Il faut que je te demande quelque chose de tr\u00e8s important...', function showMessage3() {
             // Message 3: The big question
             introVideo.src = './video/question.mp4'
             introVideo.play()
             question2Audio.play()
 
-            typeMessage('Veux-tu être ma Valentine ??', function showChoices() {
+            typeMessage('Veux-tu \u00eatre ma Valentine ??', function showChoices() {
               // Hide the arrow, show choices instead
               introDialogueArrow.style.display = 'none'
+              introDialogueBox.style.display = 'none'
               const choicesBox = document.querySelector('#introChoices')
               choicesBox.style.display = 'flex'
 
               const btnOui = document.querySelector('#btnOui')
               const btnNon = document.querySelector('#btnNon')
 
-              btnOui.addEventListener('click', () => {
+              btnOui.addEventListener('click', (e) => {
+                e.stopPropagation()
                 choicesBox.style.display = 'none'
+
+                // Stop all audio
+                bonjourAudio.stop()
+                explication1Audio.stop()
+                question2Audio.stop()
 
                 // Fade out the intro screen
                 gsap.to(introScreen, {
@@ -110,7 +121,8 @@ function playIntro() {
                 })
               })
 
-              btnNon.addEventListener('click', () => {
+              btnNon.addEventListener('click', (e) => {
+                e.stopPropagation()
                 choicesBox.style.display = 'none'
                 introDialogueBox.style.display = 'none'
 
@@ -138,7 +150,7 @@ function playIntro() {
                 })
                 karineAudio.play()
               })
-            })
+            }, true)
           })
         })
       }
