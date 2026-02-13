@@ -184,12 +184,12 @@ function playIntro() {
                       introScreen.appendChild(blackMsg)
 
                       const messages = [
-                        { text: 'Et c\'est tout !!', duration: 2000 },
+                        { text: 'Et c\'est tout !!', duration: 4000 },
                         { text: 'Quoi que...', duration: 2000 },
-                        { text: 'Tu as été très gentille avec moi dernièrement...', duration: 2000 },
-                        { text: 'Tu croyais que je t\'avais juste fait ça ?', duration: 2000 },
-                        { text: 'Ce serait mal me connaître', duration: 2000 },
-                        { text: 'Tu ne sors pas avec n\'importe qui !!', duration: 2000 }
+                        { text: 'Tu as été très gentille avec moi dernièrement...', duration: 3000 },
+                        { text: 'Tu croyais que je t\'avais juste fait ça ?', duration: 3000 },
+                        { text: 'Ce serait mal me connaître', duration: 3000 },
+                        { text: 'Tu ne sors pas avec n\'importe qui !!', duration: 3000 }
                       ]
 
                       let msgIndex = 0
