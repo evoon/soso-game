@@ -354,6 +354,8 @@ function showDialogueLine(line) {
   const dialogueBox = document.querySelector('#characterDialogueBox')
   const nameTag = document.querySelector('#characterDialogueName')
   const textEl = document.querySelector('#characterDialogueText')
+  const arrow = document.querySelector('#characterDialogueArrow')
+  arrow.style.display = 'none'
 
   // Handle structured dialogue (with speaker/text/audio)
   if (typeof line === 'object') {
@@ -366,10 +368,12 @@ function showDialogueLine(line) {
       dialogueBox.style.borderColor = '#E91E7B'
       dialogueBox.style.boxShadow = '0 0 0 3px #F06BA8, 4px 6px 12px rgba(0,0,0,0.4)'
       nameTag.style.backgroundColor = '#E91E7B'
+      arrow.style.color = '#E91E7B'
     } else {
       dialogueBox.style.borderColor = '#8B6914'
       dialogueBox.style.boxShadow = '0 0 0 3px #C4A44A, 4px 6px 12px rgba(0,0,0,0.4)'
       nameTag.style.backgroundColor = '#8B6914'
+      arrow.style.color = '#8B6914'
     }
 
     // Stop previous audio
@@ -390,9 +394,15 @@ function showDialogueLine(line) {
     // Legacy string dialogue
     nameTag.style.display = 'none'
     textEl.textContent = line
+    arrow.style.color = '#8B6914'
   }
 
   dialogueBox.style.display = 'block'
+
+  // Show arrow after a short delay
+  setTimeout(() => {
+    arrow.style.display = 'block'
+  }, 500)
 }
 
 function executeDialogueCallback(callbackName, onDone) {
